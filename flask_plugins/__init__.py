@@ -12,10 +12,11 @@
     :license: BSD, see LICENSE for more details.
 """
 import os
+import sys
 import importlib
 from collections import deque
-from werkzeug import cached_property
-from werkzeug.utils import import_string
+from sys import intern
+from werkzeug.utils import cached_property, import_string
 from jinja2 import Markup
 from flask import current_app, json
 from ._compat import itervalues, iteritems
@@ -394,7 +395,10 @@ class TemplateEventResult(list):
         list.__init__(self, items)
 
     def __unicode__(self):
-        return u''.join(map(unicode, self))
+        return u''.join(map(str, self))
 
     def __str__(self):
-        return unicode(self).encode('utf-8')
+        if sys.version_info[0] >= 3:
+            return self.__unicode__()
+        else:
+            return self.__unicode__().encode('utf-8')
