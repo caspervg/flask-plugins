@@ -15,11 +15,10 @@ import os
 import sys
 import importlib
 from collections import deque
-from sys import intern
 from werkzeug.utils import cached_property, import_string
 from jinja2 import Markup
 from flask import current_app, json
-from ._compat import itervalues, iteritems
+from ._compat import itervalues, iteritems, intern_method
 
 
 class PluginError(Exception):
@@ -352,7 +351,7 @@ class EventManager(object):
         """Connect a callback to an event."""
         assert position in ('before', 'after'), 'invalid position'
         listener_id = self._last_listener
-        event = intern(event)
+        event = intern_method(event)
         if event not in self._listeners:
             self._listeners[event] = deque([callback])
         elif position == 'after':
